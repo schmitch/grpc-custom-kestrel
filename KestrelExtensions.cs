@@ -20,7 +20,7 @@ namespace WorkerWebProject
         {
             services.AddHostedService<Worker>();
             services.Configure<KestrelServerOptions>("Grpc",
-                options => { options.ListenLocalhost(50060, o => o.Protocols = HttpProtocols.Http2); });
+                options => { options.ListenLocalhost(50060, o => o.Protocols = HttpProtocols.Http1); });
             services.AddSingleton<IKestrelPipeline, TPipeline>();
             return services;
         }
@@ -31,7 +31,7 @@ namespace WorkerWebProject
         {
             services.AddHostedService<Worker>();
             services.Configure<KestrelServerOptions>("Grpc",
-                options => { options.ListenLocalhost(50060, o => o.Protocols = HttpProtocols.Http2); });
+                options => { options.ListenLocalhost(50060, o => o.Protocols = HttpProtocols.Http1); });
             services.AddSingleton<IKestrelPipeline>(pipeline);
             return services;
         }

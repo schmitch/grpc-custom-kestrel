@@ -19,16 +19,19 @@ namespace WorkerWebProject
         private readonly ILoggerFactory _loggerFactory;
         private readonly KestrelServerOptions _options;
         private readonly IServiceProvider _provider;
+        private readonly IKestrelPipeline _pipeline;
 
         private KestrelServer _server;
 
         public Worker(ILogger<Worker> logger, ILoggerFactory loggerFactory,
             IOptionsMonitor<KestrelServerOptions> options,
-            IServiceProvider provider)
+            IServiceProvider provider, 
+            IKestrelPipeline pipeline)
         {
             _logger = logger;
             _loggerFactory = loggerFactory;
             _provider = provider;
+            _pipeline = pipeline;
             _options = options.Get("Grpc");
         }
 
@@ -45,10 +48,9 @@ namespace WorkerWebProject
             
             var app = new ApplicationBuilderFactory(_provider).CreateBuilder(_server.Features);
             
-            app.Run(async context => { await context.Response.WriteAsync("Hello World", cancellationToken); });
+            _pipeline.Configure(app);
 
             var requestDelegate = app.Build();
-
 
             await _server.StartAsync(new GrpcApplication(requestDelegate, _provider), cancellationToken);
         }

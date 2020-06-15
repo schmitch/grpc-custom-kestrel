@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +20,12 @@ namespace WorkerWebProject
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddHostedService<Worker>();
-                    services.Configure<KestrelServerOptions>("Grpc", options =>
+                    services.AddStandaloneKestrel(app =>
                     {
-                        options.ListenLocalhost(50060, o => o.Protocols = HttpProtocols.Http1);
+                        app.Run(async context => { await context.Response.WriteAsync("Test1"); });
                     });
                 });
     }
